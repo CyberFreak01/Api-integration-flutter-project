@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stockimagesapp/api_helper/pixabay_api.dart';
+import 'package:stockimagesapp/image_view.dart';
 import 'models/imgItem.dart';
 
 void main() => runApp(const GridViewNetwork());
@@ -52,7 +53,7 @@ class _GridViewNetworkState extends State<GridViewNetwork> {
 
       final decodedData = jsonResponse;
       var productsData = decodedData["hits"];
-
+      debugPrint(jsonResponse.toString());
       setState(() {
         imgItems += List.from(productsData)
             .map<Hit>((item) => Hit.fromJson(item))
@@ -80,6 +81,8 @@ class _GridViewNetworkState extends State<GridViewNetwork> {
       ),
     );
   }
+
+
 
   Widget _buildImageItem(Hit product) {
     return Card(
@@ -189,7 +192,19 @@ class _GridViewNetworkState extends State<GridViewNetwork> {
                           itemCount: imgItems.length,
                           controller: scrollController,
                           itemBuilder: (context, index) =>
-                              _buildImageItem(imgItems[index]),
+                              InkWell(
+                                onTap: () {
+                    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => ZoomableImagePage(
+        imageUrl: imgItems[index].largeImageUrl ?? "",
+      ),
+    );
+
+                  },
+                                child: _buildImageItem(imgItems[index])
+                                ),
                         ),
                         if (isLoading && !isInitialLoad)
                           Positioned(
